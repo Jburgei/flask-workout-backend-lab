@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import CheckConstraint, UniqueConstraint
-from datetime import datetime
+from datetime import date
 
 
 db = SQLAlchemy()
@@ -20,12 +20,15 @@ class Exercise(db.Model):
     category = db.Column(db.String, nullable=False)
     equipment_needed = db.Column(db.Boolean, nullable=False)
 
+    # Relationship to access workouts an exercise is part of through the join table
+    workout_exercises = db.relationship('WorkoutExercise', back_populates='exercise', cascade='all, delete-orphan')
+
 # Model-level validation to ensure exercise name is valid and category is one of the allowed categories
     @validates('name')
     def validate_name(self, key, value): 
         if not value or len(value) < 2:
             raise ValueError("Exercise name must be at lease 2 characterslong.")
-            return value.strip()
+        return value.strip()
 
 
 # Model-level validation for category to ensure it is one of the allowed categories    
@@ -35,7 +38,7 @@ class Exercise(db.Model):
         if not value:
             raise ValueError("Category is required.")
         value = value.strip().lower()
-        if value not in alowed_categories:
+        if value not in allowed_categories:
             raise ValueError(f"Category must be one of: {', '.join(allowed_categories)}.")
         return value
 
@@ -53,19 +56,22 @@ class Workout(db.Model):
     duration_minutes = db.Column(db.Integer, nullable=False)
     notes = db.Column(db.Text)
 
+    # Relationship to access exercises in a workout through the join table
+    workout_exercises = db.relationship('WorkoutExercise', back_populates='workout', cascade='all, delete-orphan')
+
 # Model-level validation to ensure workout duration: reject 0 or negative values
     @validates('duration_minutes')
     def validate_duration_minutes(self, key, value):
         if value is None or value <= 0:
             raise ValueError("Workout duration must be greater than 0. ")
-            return value
+        return value
 
         
     @validates('date')
     def validate_date(self, key, value):
         if value > date.today():
             raise ValueError("Workout date cannot be in the future.")
-            return value
+        return value
 
 
 class WorkoutExercise(db.Model):

@@ -1,10 +1,10 @@
 from datetime import date
-from server import app
-from server.models import db, Exercise, Workout, workout_exercises
+from server.app import app
+from server.models import db, Exercise, Workout, WorkoutExercise
 
 with app.app_context():
     # Clear already existing data
-    Workout_exercises.query.delete()
+    WorkoutExercise.query.delete()
     Workout.query.delete()
     Exercise.query.delete()
 
@@ -41,7 +41,7 @@ with app.app_context():
     )
 
     workout2 = Workout(
-        date=date(2026, 4, 17),
+        date=date(2026, 4, 15),
         duration_minutes=30,
         notes='Quick cardio workout'
     )
@@ -53,27 +53,27 @@ with app.app_context():
     # Create join table records to link exercises to workouts
     we1 = WorkoutExercise(
         workout_id=workout1.id,
-        exercise_id=push_up.id  
-        sets=3
+        exercise_id=push_up.id,  
+        sets=3,
         reps=12
     )
 
     we2 = WorkoutExercise(
         workout_id=workout1.id,
-        exercise_id=plank.id
+        exercise_id=plank.id,
         duration_seconds=60
     )
 
     we3 = WorkoutExercise(
         workout_id=workout2.id,
-        exercise_id=treadmill_run.id
+        exercise_id=treadmill_run.id,
         duration_seconds=900
     )
 
     we4 = WorkoutExercise(
         workout_id=workout2.id,
-        exercise_id=squat.id
-        sets=3
+        exercise_id=squat.id,
+        sets=3,
         reps=15
     )
 
