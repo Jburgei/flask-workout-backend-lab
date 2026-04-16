@@ -93,6 +93,13 @@ class WorkoutExercise(db.Model):
     sets = db.Column(db.Integer, nullable=True)
     duration_seconds = db.Column(db.Integer, nullable=True)
 
+# Relationships to easily access related data
+# Each WorkoutExercise belongs to one Workout
+    workout = db.relationship('Workout', back_populates='workout_exercises')
+
+# Each WorkoutExercise belongs to one exercise
+    exercise = db.relationship('Exercise', back_populates='workout_exercises')
+
     # Model-level validation to ensure data integrity
     @validates('reps')
     def validate_reps(self, key, value):
